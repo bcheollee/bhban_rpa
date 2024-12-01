@@ -7,19 +7,21 @@ Last Modification : 2024.12.01
 import time
 import random
 import logging
-import os
 from pathlib import Path
-
+from concurrent.futures import ProcessPoolExecutor, as_completed
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+FIRST_NAMES = "김이박최정강조윤장임"
+MIDDLE_NAMES = "민서예지도하주윤채현지"
+LAST_NAMES = "준윤우원호후서연아은진"
+DIVISIONS = ["HR", "IT", "FIN", "MKT", "OPS", "R&D", "SAL"]
 
 def random_string(length):
     return ''.join(random.choices("abcdefghizklmnopqrstuvwxyz1234567890", k=length))
 
 def random_name():
-    return (random.choice("김이박최정강조윤장임") +
-            random.choice("민서예지도하주윤채현지") +
-            random.choice("준윤우원호후서연아은진"))
+    return random.choice(FIRST_NAMES) + random.choice(MIDDLE_NAMES) + random.choice(LAST_NAMES)
 
 def generate_personal_info():
     name = random_name()
@@ -27,25 +29,30 @@ def generate_personal_info():
         "name": name,
         "age": str(random.randint(18, 85)),
         "e-mail": f"{random_string(8)}@bhban.com",
-        "division": random_string(3),
-        "telephone": f"010-{random.randint(0000, 9999):04d}-{random.randint(0000, 9999):04d}",
+        "division": random.choice(DIVISIONS),
+        "telephone": f"010-{random.randint(0, 9999):04d}-{random.randint(0, 9999):04d}",
         "sex": random.choice(["male", "female"])
     }
+
+def create_personal_info_file(args):
+    i, output_path = args
+    info = generate_personal_info()
+    filename = output_path / f"{i}_{info['name']}.txt"
+
+    with open(filename, 'w', encoding='utf-8') as outfile:
+        outfile.write('\n'.join(f"{key} : {value}" for key, value in info.items()))
 
 def create_personal_info_files(num_samples, output_dir):
     output_path = Path(output_dir)
     output_path.mkdir(parents=True, exist_ok=True)
 
-    for i in range(num_samples):
-        info = generate_personal_info()
-        filename = output_path / f"{i}_{info['name']}.txt"
-
-        with open(filename, 'w', encoding='utf-8') as outfile:
-            for key, value in info.items():
-                outfile.write(f"{key} : {value}\n")
+    with ProcessPoolExecutor() as executor:
+        futures = [executor.submit(create_personal_info_file, (i, output_path)) for i in range(num_samples)]
+        for future in as_completed(futures):
+            future.result()  # This will raise any exceptions that occurred during execution
 
 def main():
-    logging.info("Process Start.")
+    logging.info("프로세스 시작")
     start_time = time.time()
 
     NUM_SAMPLES = 1000
@@ -53,7 +60,7 @@ def main():
 
     create_personal_info_files(NUM_SAMPLES, OUTPUT_DIR)
 
-    logging.info("Process Done.")
+    logging.info("프로세스 완료")
     end_time = time.time()
     logging.info(f"The Job Took {end_time - start_time:.2f} seconds.")
 
