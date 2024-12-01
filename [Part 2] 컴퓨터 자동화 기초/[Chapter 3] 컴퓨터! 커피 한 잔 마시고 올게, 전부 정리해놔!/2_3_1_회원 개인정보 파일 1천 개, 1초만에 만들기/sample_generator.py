@@ -1,92 +1,57 @@
-#-*-coding:euc-kr
 """
-Author : Byunghyun Ban
+Author : ByoungCheol Lee
 GitHub : https://github.com/needleworm
-Book : 6°³¿ù Ä¡ ¾÷¹«¸¦ ÇÏ·ç ¸¸¿¡ ³¡³»´Â ¾÷¹« ÀÚµ¿È­
-Last Modification : 2020.02.12.
+Book : 6ê°œì›” ì¹˜ ì—…ë¬´ë¥¼ í•˜ë£¨ ë§Œì— ëë‚´ëŠ” ì—…ë¬´ ìë™í™”
+Last Modification : 2024.12.01
 """
 import time
 import random
 import os
+from pathlib import Path
 
-
-# ÀÛ¾÷ ½ÃÀÛ ¸Ş½ÃÁö¸¦ Ãâ·ÂÇÕ´Ï´Ù.
-print("Process Start.")
-
-# ½ÃÀÛ ½ÃÁ¡ÀÇ ½Ã°£À» ±â·ÏÇÕ´Ï´Ù.
-start_time = time.time()
-
-# »ı¼ºÇÒ °³ÀÎÁ¤º¸ ÆÄÀÏ °³¼ö¸¦ Á¤ÀÇÇÕ´Ï´Ù.
-NUM_SAMPLES = 1000
-
-# ÀÌ¸ŞÀÏ »ı¼º¿¡ »ç¿ëÇÒ »ùÇÃ ±ÛÀÚµéÀ» Á¤ÀÇÇÕ´Ï´Ù.
-alphabet_samples = "abcdefghizklmnopqrstuvwxyz1234567890"
-
-
-# ¹«ÀÛÀ§·Î ¼±ÅÃµÈ ¿µ¾î ±ÛÀÚ¸¦ »ı¼ºÇÏ´Â ÇÔ¼öÀÔ´Ï´Ù.
 def random_string(length):
-    result = ""
-    for i in range(length):
-        result += random.choice(alphabet_samples)
-    return result
+    return ''.join(random.choices("abcdefghizklmnopqrstuvwxyz1234567890", k=length))
 
-
-# ÀÌ¸§ »ı¼º¿¡ »ç¿ëÇÒ »ùÇÃ ±ÛÀÚµéÀ» Á¤ÀÇÇÕ´Ï´Ù.
-first_name_samples = "±èÀÌ¹ÚÃÖÁ¤°­Á¶À±ÀåÀÓ"
-middle_name_samples = "¹Î¼­¿¹ÁöµµÇÏÁÖÀ±Ã¤ÇöÁö"
-last_name_samples = "ÁØÀ±¿ì¿øÈ£ÈÄ¼­¿¬¾ÆÀºÁø"
-
-
-# ¹«ÀÛÀ§·Î »ç¶÷ ÀÌ¸§À» »ı¼ºÇÏ´Â ÇÔ¼öÀÔ´Ï´Ù.
 def random_name():
-    result = ""
-    result += random.choice(first_name_samples)
-    result += random.choice(middle_name_samples)
-    result += random.choice(last_name_samples)
-    return result
+    return (random.choice("ê¹€ì´ë°•ìµœì •ê°•ì¡°ìœ¤ì¥ì„") +
+            random.choice("ë¯¼ì„œì˜ˆì§€ë„í•˜ì£¼ìœ¤ì±„í˜„ì§€") +
+            random.choice("ì¤€ìœ¤ìš°ì›í˜¸í›„ì„œì—°ì•„ì€ì§„"))
 
-
-# °á°ú¹°À» ÀúÀåÇÒ Æú´õ¸¦ »ı¼ºÇÕ´Ï´Ù.
-os.mkdir("personal_info")
-
-# °³ÀÎÁ¤º¸ ÆÄÀÏÀ» ÀÚµ¿À¸·Î »ı¼ºÇÏ´Â ºÎºĞÀÔ´Ï´Ù.
-# NUM_SAMPLES È¸¼ö¸¸Å­ ¹İº¹ÇÕ´Ï´Ù.
-# ÀÌ¸¦Å×¸é, NUM_SAMPLES°¡ 100ÀÌ¸é ¹«ÀÛÀ§ °³ÀÎÁ¤º¸ »ı¼ºÀ» 100È¸ ¹İº¹ÇÕ´Ï´Ù.
-for i in range(NUM_SAMPLES):
-    # ¹«ÀÛÀ§·Î »ç¶÷ ÀÌ¸§À» »ı¼ºÇÕ´Ï´Ù.
+def generate_personal_info():
     name = random_name()
+    return {
+        "name": name,
+        "age": str(random.randint(18, 85)),
+        "e-mail": f"{random_string(8)}@bhban.com",
+        "division": random_string(3),
+        "telephone": f"010-{random.randint(0000, 9999):04d}-{random.randint(0000, 9999):04d}",
+        "sex": random.choice(["male", "female"])
+    }
 
-    # °á°ú¹° ÆÄÀÏÀÇ ÀÌ¸§À» Á¤ÀÇÇÕ´Ï´Ù.
-    filename = "personal_info/" + str(i) + "_" + name + ".txt"
+def create_personal_info_files(num_samples, output_dir):
+    output_path = Path(output_dir)
+    output_path.mkdir(parents=True, exist_ok=True)
 
-    # °á°ú¹° ÆÄÀÏÀ» »ı¼ºÇÕ´Ï´Ù. ÅÖ ºó ÆÄÀÏÀÌ »ı¼ºµË´Ï´Ù.
-    outfile = open(filename, 'w')
+    for i in range(num_samples):
+        info = generate_personal_info()
+        filename = output_path / f"{i}_{info['name']}.txt"
 
-    # °á°ú¹° ÆÄÀÏ¿¡ ÀÌ¸§À» ±âÀçÇÕ´Ï´Ù.
-    outfile.write("name : " + name + "\n")
+        with open(filename, 'w', encoding='utf-8') as outfile:
+            for key, value in info.items():
+                outfile.write(f"{key} : {value}\n")
 
-    # °á°ú¹° ÆÄÀÏ¿¡ ¹«ÀÛÀ§·Î »ı¼ºµÈ ³ªÀÌ¸¦ ±âÀçÇÕ´Ï´Ù.
-    outfile.write("age : " + str(time.time())[-2:] + "\n")
+def main():
+    print("Process Start.")
+    start_time = time.time()
 
-    # °á°ú¹° ÆÄÀÏ¿¡ ¹«ÀÛÀ§·Î »ı¼ºµÈ ÀÌ¸ŞÀÏÀ» ±âÀçÇÕ´Ï´Ù.
-    outfile.write("e-mail : " + random_string(8) + "@bhban.com\n")
+    NUM_SAMPLES = 1000
+    OUTPUT_DIR = "../2_3_2_íšŒì› ê°œì¸ì •ë³´ íŒŒì¼ 1ì²œ ê°œ, í…ìŠ¤íŠ¸ íŒŒì¼ í•˜ë‚˜ë¡œ í•©ì¹˜ê¸°/personal_info"
 
-    # °á°ú¹° ÆÄÀÏ¿¡ ¹«ÀÛÀ§·Î »ı¼ºµÈ ºÎ¼­¸íÀ» ±âÀçÇÕ´Ï´Ù.
-    outfile.write("division : " + random_string(3) + "\n")
+    create_personal_info_files(NUM_SAMPLES, OUTPUT_DIR)
 
-    # °á°ú¹° ÆÄÀÏ¿¡ ¹«ÀÛÀ§·Î »ı¼ºµÈ ÇÚµåÆù ¹øÈ£¸¦ ±âÀçÇÕ´Ï´Ù.
-    outfile.write("telephone : 010-" + str(time.time())[-4:] + "-" + str(time.time())[-6:-2] + '\n')
+    print("Process Done.")
+    end_time = time.time()
+    print(f"The Job Took {end_time - start_time:.2f} seconds.")
 
-    # °á°ú¹° ÆÄÀÏ¿¡ ¹«ÀÛÀ§·Î ¼±Á¤µÈ ¼ºº°À» ±âÀçÇÕ´Ï´Ù.
-    outfile.write("sex : " + random.choice(["male", "female"]))
-
-    # °á°ú¹° ÆÄÀÏ ¼öÁ¤À» ¸¶¹«¸®ÇÕ´Ï´Ù.
-    outfile.close()
-
-
-# ÀÛ¾÷ Á¾·á ¸Ş¼¼Áö¸¦ Ãâ·ÂÇÕ´Ï´Ù.
-print("Process Done.")
-
-# ÀÛ¾÷¿¡ ÃÑ ¸î ÃÊ°¡ °É·È´ÂÁö Ãâ·ÂÇÕ´Ï´Ù.
-end_time = time.time()
-print("The Job Took " + str(end_time - start_time) + " seconds.")
+if __name__ == "__main__":
+    main()
