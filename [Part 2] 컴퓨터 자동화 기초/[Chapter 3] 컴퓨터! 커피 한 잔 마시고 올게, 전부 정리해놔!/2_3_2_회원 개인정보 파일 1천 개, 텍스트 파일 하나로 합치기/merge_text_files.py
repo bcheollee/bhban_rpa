@@ -1,56 +1,56 @@
-#-*-coding:euc-kr
 """
-Author : Byunghyun Ban
-GitHub : https://github.com/needleworm
-Book : 6°³¿ù Ä¡ ¾÷¹«¸¦ ÇÏ·ç ¸¸¿¡ ³¡³»´Â ¾÷¹« ÀÚµ¿È­
-Last Modification : 2020.02.12.
+Author : ByoungCheol Lee
+GitHub : https://github.com/bcheollee
+Book : 6ê°œì›” ì¹˜ ì—…ë¬´ë¥¼ í•˜ë£¨ ë§Œì— ëë‚´ëŠ” ì—…ë¬´ ìë™í™”
+Last Modification : 2024.12.01.
 """
+
 import time
 import os
+import logging
+from pathlib import Path
 
-# ÀÛ¾÷ ½ÃÀÛ ¸Ş½ÃÁö¸¦ Ãâ·ÂÇÕ´Ï´Ù.
-print("Process Start")
 
-# ½ÃÀÛ ½ÃÁ¡ÀÇ ½Ã°£À» ±â·ÏÇÕ´Ï´Ù.
-start_time = time.time()
+def merge_files(directory, outfile_name):
+    # ì‘ì—… ì‹œì‘ ë©”ì‹œì§€ë¥¼ ë¡œê¹…í•©ë‹ˆë‹¤.
+    logging.info("í”„ë¡œì„¸ìŠ¤ ì‹œì‘")
 
-# ÇÏ³ª·Î ÇÕÄ¥ ÆÄÀÏµéÀÌ ÀúÀåµÈ Æú´õ ÀÌ¸§À» Àû¾îÁÖ¼¼¿ä.
-directory = "personal_info"
+    start_time = time.time()
 
-# °á°ú¹° ÆÄÀÏÀÇ ÀÌ¸§À» Á¤ÀÇÇÕ´Ï´Ù.
-outfile_name = "merged_ID.txt"
+    directory_path = Path(directory)
+    outfile_path = Path(outfile_name)
 
-# °á°ú¹° ÆÄÀÏÀ» »ı¼ºÇÕ´Ï´Ù. ÅÖ ºó ÅØ½ºÆ®ÆÄÀÏÀÌ »ı¼ºµË´Ï´Ù.
-out_file = open(outfile_name, 'w')
+    try:
+        # ê²°ê³¼ë¬¼ íŒŒì¼ì„ ìƒì„±í•©ë‹ˆë‹¤.
+        with outfile_path.open('w', encoding='utf-8') as out_file:
+            # í´ë”ì˜ ë‚´ìš©ë¬¼ì„ ì—´ëŒí•´ ëª©ë¡ì„ ìƒì„±í•©ë‹ˆë‹¤.
+            for file_path in directory_path.glob('*.txt'):
+                try:
+                    # í…ìŠ¤íŠ¸ íŒŒì¼ì„ ì½ì–´ì˜µë‹ˆë‹¤.
+                    with file_path.open('r', encoding='utf-8') as file:
+                        content = file.read()
+                        # íŒŒì¼ì˜ ë‚´ìš©ë¬¼ì„ ê²°ê³¼ë¬¼ íŒŒì¼ì— ê¸°ì¬í•©ë‹ˆë‹¤.
+                        out_file.write(content + "\n\n")
+                except IOError as e:
+                    logging.error(f"{file_path} íŒŒì¼ ì½ê¸° ì˜¤ë¥˜: {e}")
 
-# Æú´õÀÇ ³»¿ë¹°À» ¿­¶÷ÇØ ¸ñ·ÏÀ» »ı¼ºÇÕ´Ï´Ù.
-input_files = os.listdir(directory)
+        logging.info("í”„ë¡œì„¸ìŠ¤ ì™„ë£Œ")
 
-# Æú´õÀÇ ³»¿ë¹°À» ÇÏ³ªÇÏ³ª ºÒ·¯¿Í ÇÕÄ¡´Â ÀÛ¾÷À» ¼öÇàÇÕ´Ï´Ù.
-# input_files¿¡ ÀúÀåµÈ ÆÄÀÏ ÀÌ¸§À» ÇÑ ¹ø¿¡ ÇÏ³ª¾¿ ºÒ·¯¿É´Ï´Ù.
-for filename in input_files:
-    # °£È¤ ÅØ½ºÆ® ÆÄÀÏÀÌ ¾Æ´Ñ ÆÄÀÏÀÌ ¼¯¿©ÀÖÀ» ¼ö ÀÖ½À´Ï´Ù. ÀÌ°É °É·¯³À´Ï´Ù.
-    if ".txt" not in filename:
-        continue
+        end_time = time.time()
+        logging.info(f"ì‘ì—… ì†Œìš” ì‹œê°„: {end_time - start_time:.2f}ì´ˆ")
 
-    # ÅØ½ºÆ® ÆÄÀÏÀÌ ¸Â´Ù¸é, ÆÄÀÏÀ» ÀĞ¾î¿É´Ï´Ù.
-    file = open(directory + "/" + filename)
+    except IOError as e:
+        logging.error(f"ê²°ê³¼ íŒŒì¼ {outfile_name} ì“°ê¸° ì˜¤ë¥˜: {e}")
 
-    # ÆÄÀÏÀÇ ³»¿ë¹°À» ¹®ÀÚ¿­·Î ºÒ·¯¿É´Ï´Ù.
-    content = file.read()
 
-    # ÆÄÀÏÀÇ ³»¿ë¹°À» °á°ú¹° ÆÄÀÏ¿¡ ±âÀçÇÕ´Ï´Ù.
-    out_file.write(content + "\n\n")
+if __name__ == "__main__":
+    # ë¡œê¹… ì„¤ì •
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-    # ÀĞ¾î¿Â ÆÄÀÏÀ» Á¾·áÇÕ´Ï´Ù.
-    file.close()
+    # í•˜ë‚˜ë¡œ í•©ì¹  íŒŒì¼ë“¤ì´ ì €ì¥ëœ í´ë” ì´ë¦„ì„ ì ì–´ì£¼ì„¸ìš”.
+    directory = "personal_info"
 
-# °á°ú¹° ÆÄÀÏÀ» Á¾·áÇÕ´Ï´Ù.
-out_file.close()
+    # ê²°ê³¼ë¬¼ íŒŒì¼ì˜ ì´ë¦„ì„ ì •ì˜í•©ë‹ˆë‹¤.
+    outfile_name = "merged_ID.txt"
 
-# ÀÛ¾÷ Á¾·á ¸Ş½ÃÁö¸¦ Ãâ·ÂÇÕ´Ï´Ù.
-print("Process Done.")
-
-# ÀÛ¾÷¿¡ ÃÑ ¸î ÃÊ°¡ °É·È´ÂÁö Ãâ·ÂÇÕ´Ï´Ù.
-end_time = time.time()
-print("The Job Took " + str(end_time - start_time) + " seconds.")
+    merge_files(directory, outfile_name)
