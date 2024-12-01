@@ -1,6 +1,6 @@
 """
 Author : ByoungCheol Lee
-GitHub : https://github.com/needleworm
+GitHub : https://github.com/bcheollee
 Book : 6개월 치 업무를 하루 만에 끝내는 업무 자동화
 Last Modification : 2024.12.01
 """
