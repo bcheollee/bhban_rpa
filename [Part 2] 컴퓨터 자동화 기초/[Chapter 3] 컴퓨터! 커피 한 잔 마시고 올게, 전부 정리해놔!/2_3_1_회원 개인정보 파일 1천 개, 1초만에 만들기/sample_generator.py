@@ -6,8 +6,12 @@ Last Modification : 2024.12.01
 """
 import time
 import random
+import logging
 import os
 from pathlib import Path
+
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def random_string(length):
     return ''.join(random.choices("abcdefghizklmnopqrstuvwxyz1234567890", k=length))
@@ -41,7 +45,7 @@ def create_personal_info_files(num_samples, output_dir):
                 outfile.write(f"{key} : {value}\n")
 
 def main():
-    print("Process Start.")
+    logging.info("Process Start.")
     start_time = time.time()
 
     NUM_SAMPLES = 1000
@@ -49,9 +53,9 @@ def main():
 
     create_personal_info_files(NUM_SAMPLES, OUTPUT_DIR)
 
-    print("Process Done.")
+    logging.info("Process Done.")
     end_time = time.time()
-    print(f"The Job Took {end_time - start_time:.2f} seconds.")
+    logging.info(f"The Job Took {end_time - start_time:.2f} seconds.")
 
 if __name__ == "__main__":
     main()
